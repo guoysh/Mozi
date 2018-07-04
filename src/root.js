@@ -15,18 +15,14 @@ const store = configureStore();
 store.runSaga(rootSaga);
 
 export default class Root extends Component {
+
   componentDidMount() {
     SplashScreen.hide(); // 隐藏启动屏
   }
-
   render() {
     return (
       <Provider store={store}>
-        <App
-          ref={ref => {
-            this.rootNav = ref;
-          }}
-        />
+        <App />
       </Provider>
     );
   }
