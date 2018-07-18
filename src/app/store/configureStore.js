@@ -1,5 +1,8 @@
 import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware, { END } from 'redux-saga';
+import {
+  createReactNavigationReduxMiddleware
+} from 'react-navigation-redux-helpers';
 
 import rootReducer from '../reducers/index';
 
@@ -9,6 +12,15 @@ const { logger } = require('redux-logger');
 const sagaMiddleware = createSagaMiddleware();
 
 middlewares.push(sagaMiddleware);
+
+// configuring ReactNavigationRedux middleware
+const ReactNavigationReduxMiddleware = createReactNavigationReduxMiddleware(
+  'root',
+  state => state.nav
+);
+
+middlewares.push(ReactNavigationReduxMiddleware);
+
 
 /* global __DEV__  */
 if (__DEV__) {

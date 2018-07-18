@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import { BackHandler, ToastAndroid,Platform,Alert } from "react-native";
 import { connect } from 'react-redux';
-import { addNavigationHelpers, NavigationActions } from 'react-navigation';
+import {
+  reduxifyNavigator,
+} from 'react-navigation-redux-helpers';
+import { NavigationActions } from 'react-navigation';
 import JPushModule from 'jpush-react-native';
 import Routers from './routers/app';
 
-@connect(state => ({ nav: state.nav }))
-export default class AppWithNavigationState extends Component {
-  componentDidMount() {
-      console.log('############',  this.props)
-    BackHandler.addEventListener("hardwareBackPress", this.onBackPress);
 
-console.log('JPushModule--',JPushModule)
+@connect(state => ({ nav: state.nav }))
+export default class AppNavigationState extends Component {
+  componentDidMount() {
+    BackHandler.addEventListener("hardwareBackPress", this.onBackPress);
     if (Platform.OS === 'android') {
     // 通知 JPushModule 初始化完成，发送缓存事件。
          JPushModule.notifyJSDidLoad((resultCode) => {});
@@ -28,12 +29,7 @@ console.log('JPushModule--',JPushModule)
     JPushModule.addReceiveOpenNotificationListener((map) => {
       console.log("Opening notification!");
       !!this.root && this.root.props.navigation.navigate('Gong')
-
-      // 可执行跳转操作，也可跳转原生页面
-      // this.props.navigation.navigate("SecondActivity");
     });
-  // console.log('#####***',  this.root)
-  // !!this.root && this.root.props.navigation.navigate('Gong')
 
   }
 
@@ -59,15 +55,11 @@ console.log('JPushModule--',JPushModule)
   };
 
   render() {
-    const { dispatch, nav } = this.props;
-    const navigation = addNavigationHelpers({
-      dispatch,
-      state: nav,
-    });
-    return (
-      <Routers
-        navigation={navigation}
 
+    let AppWithNavigationState = reduxifyNavigator(Routers, 'root');
+
+    return (
+      <AppWithNavigationState
         ref={ref => {
           this.root = ref;
         }}
